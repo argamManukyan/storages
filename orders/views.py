@@ -277,6 +277,7 @@ class FetchStore(APIView):
 
     def post(self, request, **kwargs):
         token =  generate_token()
+        print(token)
         headers = {"Authorization": f"Bearer {token}"}
         store_name = request.data.get('store')
         res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/store/'
