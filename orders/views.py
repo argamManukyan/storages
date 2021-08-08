@@ -1,11 +1,12 @@
 import requests, base64
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
 def generate_token():
-    b64Val = base64.b64encode(b'api@си:wZi1QsfD')
+    b64Val = base64.b64encode(bytes('api@си:wZi1QsfD'))
     token = requests.post('https://online.moysklad.ru/api/remap/1.2/security/token', headers={"Authorization": "Basic %s" % b64Val}).json()
     
     return token.get('access_token')
