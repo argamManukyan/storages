@@ -6,9 +6,9 @@ from rest_framework.views import APIView
 
 
 def generate_token():
-    # b64Val = base64.b64encode(bytes('api@си:wZi1QsfD'.encode('utf-8')))
-    # token = requests.post('https://online.moysklad.ru/api/remap/1.2/security/token', headers={"Authorization": "Basic %s" % b64Val}).json()
-    # print(token)
+    b64Val = base64.encodebytes(bytes('api@си:wZi1QsfD'.encode('utf-8')))
+    token = requests.post('https://online.moysklad.ru/api/remap/1.2/security/token', headers={"Authorization": "Basic %s" % b64Val}).json()
+    print(token)
     return '969dad3d03ef67680f68072ddf53c0df24eacea8'
 
 class FetchBarcodes(APIView):
@@ -275,7 +275,6 @@ class FetchStore(APIView):
 
     def post(self, request, **kwargs):
         token =  generate_token()
-        print(token)
         headers = {"Authorization": f"Bearer {token}"}
         store_name = request.data.get('store')
         res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/store/'
