@@ -1,15 +1,23 @@
 from typing import Counter
 import requests
+from requests.models import HTTPBasicAuth
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
+def generate_token():
+    token = requests.post('https://online.moysklad.ru/api/remap/1.2/security/token', auth=HTTPBasicAuth(
+        username='api@сиг',
+        password='wZi1QsfD'
+    )).json()
+
+    return token.get('access_token')
 
 class FetchBarcodes(APIView):
 
     def post(self,request,**kwargs):
-        token = '33610147a2e467a2de2eedc53913cd5f818969f3'
+        token =  generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         data = {}
         data['products'] = []
@@ -17,10 +25,11 @@ class FetchBarcodes(APIView):
         return_list = request.data.get('codes')
 
         # for bar_code_founder in return_list:
-    
+
         res5 = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/assortment?filter=search={return_list}',
                             params=None, headers=headers).json()
 
+        
         if res5.get('rows'):
             for new_bc in res5['rows']:
                 if new_bc.get('barcodes'):
@@ -53,7 +62,7 @@ class FetchProducts(APIView):
 
     def post(self, request, **kwargs):
         global return_list
-        token = '33610147a2e467a2de2eedc53913cd5f818969f3'
+        token =  generate_token()
         headers = {"Authorization": f"Bearer {token}"}
 
         data = {}
@@ -196,7 +205,7 @@ class FetchAgents(APIView):
     """
 
     def post(self, request, **kwargs):
-        token = '33610147a2e467a2de2eedc53913cd5f818969f3'
+        token =  generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         agents = request.data.get('name')
         res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/counterparty/'
@@ -209,7 +218,7 @@ class FetchOrganization(APIView):
     """ Example of request {'inn':'5665656565','kpp':'55522555'} """
 
     def post(self, request, **kwargs):
-        token = '33610147a2e467a2de2eedc53913cd5f818969f3'
+        token =  generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         organization_data = f'inn={request.data.get("inn")}&kpp={request.data.get("kpp")}'
         res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/organization/'
@@ -223,7 +232,7 @@ class FetchStates(APIView):
 
     def post(self, request, **kwargs):
 
-        token = '33610147a2e467a2de2eedc53913cd5f818969f3'
+        token =  generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         data_req = request.data
         res = requests.get('https://online.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/', params=None,
@@ -253,7 +262,7 @@ class OrderForBuyer(APIView):
     """ Order for buyer 'Заказ покупателя' """
 
     def post(self, request, **kwargs):
-        token = '33610147a2e467a2de2eedc53913cd5f818969f3'
+        token =  generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         data = request.data
 
@@ -268,7 +277,7 @@ class FetchStore(APIView):
     """ Example of request {"store": 'Великий Новгород'} """
 
     def post(self, request, **kwargs):
-        token = '33610147a2e467a2de2eedc53913cd5f818969f3'
+        token =  generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         store_name = request.data.get('store')
         res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/store/'
@@ -281,7 +290,7 @@ class OrderSupplier(APIView):
     """ Order for buyer 'Заказ Поставщику'  required params name,organization,agent """
 
     def post(self, request, **kwargs):
-        token = '33610147a2e467a2de2eedc53913cd5f818969f3'
+        token =  generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         data_req = request.data
         res = requests.post('https://online.moysklad.ru/api/remap/1.2/entity/purchaseorder',
@@ -295,7 +304,7 @@ class OrderAcceptance(APIView):
     """ Приемка required params name,organization,agent,store """
 
     def post(self, request, **kwargs):
-        token = '33610147a2e467a2de2eedc53913cd5f818969f3'
+        token =  generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         data_req = request.data
         res = requests.post('https://online.moysklad.ru/api/remap/1.2/entity/supply',
@@ -309,7 +318,7 @@ class OrderShipments(APIView):
     """ Отгрузки  required params name,organization,agent,store """
 
     def post(self, request, **kwargs):
-        token = '33610147a2e467a2de2eedc53913cd5f818969f3'
+        token =  generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         data_req = request.data
         res = requests.post('https://online.moysklad.ru/api/remap/1.2/entity/demand',
