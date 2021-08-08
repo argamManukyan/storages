@@ -5,11 +5,9 @@ from rest_framework.views import APIView
 
 
 def generate_token():
-    usrPass = "api@си:wZi1QsfD".encode('ascii')
-    auth_encode = base64.urlsafe_b64decode(usrPass)
-    token = requests.post('https://online.moysklad.ru/api/remap/1.2/security/token',
-                            headers={'Authorization': 'Basic %s'.format(auth_encode)}).json()
-    print(token)
+    b64Val = base64.b64encode(b'api@си:wZi1QsfD')
+    token = requests.post('https://online.moysklad.ru/api/remap/1.2/security/token', headers={"Authorization": "Basic %s" % b64Val}).json()
+    
     return token.get('access_token')
 
 class FetchBarcodes(APIView):
