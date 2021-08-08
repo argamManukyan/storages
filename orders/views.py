@@ -281,7 +281,7 @@ class FetchStore(APIView):
         store_name = request.data.get('store')
         res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/store/'
                            f'?filter=name={store_name}', params=None, headers=headers)
-        print(res.json()['rows'])
+        print(res.json())
         data = {'id': res.json()['rows'][0]['id']}
         return Response(data=data, status=200)
 
