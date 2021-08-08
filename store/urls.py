@@ -20,8 +20,8 @@ from django.conf.urls.static import static
 from .yasg_urls import urlpatterns as ups
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('orders.urls')),
+    path('python-api/admin/', admin.site.urls),
+    path('python-api/api/v1/', include('orders.urls')),
 ]
 
 if settings.DEBUG:
