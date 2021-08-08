@@ -2,8 +2,6 @@ venv/
 db.sqlite3
 frontend/
 static/
-static_dev/
-.vscode/
 
 
 :8090
