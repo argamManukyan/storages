@@ -146,44 +146,7 @@ class FetchProducts(APIView):
                         if str(i['code']).lower() in return_list:
                             return_list.remove(str(i['code']).lower())
     
-                # if len(return_list):
-                #     for not_code in return_list:
-                #         res3 = requests.get(f'http://online.moysklad.ru/api/remap/1.2/entity/product?search={not_code}',
-                #                             params=None, headers=headers).json()
-                #         if res3.get('rows'):
-                            
-                #             data['products'].append(
-                #                 {'id': res3.get('rows')[0].get('id'), "code": res3.get('rows')[0].get('code')})
-                #             return_list.remove(not_code)
-                # if len(return_list):
-                #     for not_code_article in return_list:
-                #         res4 = requests.get(
-                #             f'http://online.moysklad.ru/api/remap/1.2/entity/product?filter=article={not_code_article}',
-                #             params=None, headers=headers).json()
-                #         if res4.get('rows'):
-                            
-                #             data['products'].append(
-                #                 {'id': res4.get('rows')[0].get('id'), "code": res4.get('rows')[0].get('code')})
-                #             return_list.remove(not_code)
-        #         # data['is_modification'] = False
-        # if request.data.get('is_modification') == True:
-        #     if len(return_list):
-                
-        #         for bar_code_founder in return_list:
-
-        #             res5 = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/assortment?filter=search={bar_code_founder}',
-        #                                 params=None, headers=headers).json()
-
-        #             if res5.get('rows'):
-        #                 for new_bc in res5['rows']:
-        #                     if new_bc.get('barcodes'):
-        #                         for bar_c in new_bc['barcodes']:
-                                    
-        #                             if list(bar_c.values())[0] in return_list:
-        #                                 data['products'].append({'id':new_bc.get('id'), "code" : list(bar_c.values())[0]})
-        #                                 return_list.remove(list(bar_c.values())[0])
-        #         data['is_modification'] = True
-                  
+                                
 
             code_error_dict = {}
             code_error_dict['code_errors'] = list()
@@ -277,11 +240,14 @@ class FetchStore(APIView):
         token =  generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         store_name = request.data.get('store')
-        res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/store/'
-                           f'?filter=name={store_name}', params=None, headers=headers)
-        print(res.json())
-        data = {'id': res.json()['rows'][0]['id']}
-        return Response(data=data, status=200)
+        if store_name:
+            res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/store/'
+                            f'?filter=name={store_name}', params=None, headers=headers)
+        else:
+            res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/store/', params=None, headers=headers)
+        if res.status_code >= 200 and res.status_code <= 205:
+            return Response(data=res.json(), status=status.HTTP_200_OK)
+        return Response(data=res.json(), status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderSupplier(APIView):
