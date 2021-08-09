@@ -172,7 +172,7 @@ class FetchAgents(APIView):
                            f'?filter=name={agents}', params=None, headers=headers)
         data = res.json()['rows']
         if res.status_code >= 200 and res.status_code <= 205:
-            data['contrangents'] = res.json()['rows']
+            
             return Response(data, status=status.HTTP_200_OK)
         return Response(data, status=status.HTTP_400_BAD_REQUEST)
        
