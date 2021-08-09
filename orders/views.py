@@ -186,7 +186,7 @@ class FetchOrganization(APIView):
         
         data = {}
         if res.status_code >= 200 and res.status_code <= 205:
-            data = res.json()['rows']
+            data['organizations'] = res.json()['rows']
             return Response(data, status=status.HTTP_200_OK)
         return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
