@@ -250,8 +250,8 @@ class FetchStore(APIView):
         else:
             res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/store/', params=None, headers=headers)
         if res.status_code >= 200 and res.status_code <= 205:
-            print(res.json())
-            return Response(data={'stores': res.json()}, status=status.HTTP_200_OK)
+            
+            return Response(data={'stores': res.json()['rows']}, status=status.HTTP_200_OK)
         return Response(data=res.json(), status=status.HTTP_400_BAD_REQUEST)
 
 
