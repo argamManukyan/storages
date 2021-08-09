@@ -170,7 +170,7 @@ class FetchAgents(APIView):
         agents = request.data.get('name')
         res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/counterparty/'
                            f'?filter=name={agents}', params=None, headers=headers)
-        data = res.json()
+        data = res.json()['rows']
         return Response(data, status=200)
 
 
