@@ -171,7 +171,11 @@ class FetchAgents(APIView):
         res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/counterparty/'
                            f'?filter=name={agents}', params=None, headers=headers)
         data = res.json()['rows']
-        return Response(data, status=200)
+        if res.status_code >= 200 and res.status_code <= 205:
+            data['contrangents'] = res.json()['rows']
+            return Response(data, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)
+       
 
 
 class FetchOrganization(APIView):
