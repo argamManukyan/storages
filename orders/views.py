@@ -136,7 +136,7 @@ class FetchProducts(APIView):
                     for i in res2['rows']:
                         ct_variant += 1
                         if len(founded_codes) == 0:
-                            if ct_code == 1:
+                            if ct_variant == 1:
                                 founded_codes.append(f'code!={i.get("code")}')
                             else:
                                 founded_codes[0]+=f'code!={i.get("code")}'
