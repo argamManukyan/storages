@@ -169,7 +169,7 @@ class FetchAgents(APIView):
         headers = {"Authorization": f"Bearer {token}"}
         agents = request.data.get('name')
         res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/counterparty/'
-                           f'?filter=name={agents}', params=None, headers=headers)
+                           f'?filter=search={agents}', params=None, headers=headers)
 
         data = {'contragents': res.json()['rows']}
         if res.status_code >= 200 and res.status_code <= 205 and len(data):
