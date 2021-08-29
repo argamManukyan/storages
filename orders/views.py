@@ -186,8 +186,7 @@ class FetchOrganization(APIView):
         token =  generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         organization_data = f'inn={request.data.get("inn")}&kpp={request.data.get("kpp")}'
-        res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/organization/'
-                           f'?filter={organization_data}', params=None, headers=headers)   
+        res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/organization', params=None, headers=headers)
         
         data = {}
         if res.status_code >= 200 and res.status_code <= 205:
