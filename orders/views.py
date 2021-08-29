@@ -172,7 +172,7 @@ class FetchAgents(APIView):
                            f'?filter=name={agents}', params=None, headers=headers)
 
 
-        if res.status_code in [range(200,206)]:
+        if res.status_code == 200 and len(res.json()['rows']):
             data = {"id": res.json()['rows'][0]['accountId'], "name": res.json()['rows'][0]['name']}
             return Response(data, status=status.HTTP_200_OK)
         return Response(data={"detail":'Нет результата'}, status=status.HTTP_400_BAD_REQUEST)
