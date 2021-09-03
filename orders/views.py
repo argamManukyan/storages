@@ -34,7 +34,7 @@ class FetchBarcodes(APIView):
                     for bar_c in new_bc['barcodes']:  
                         # this_variant_shtrix.append(list(bar_c.values())[0])                      
                         if list(bar_c.values())[0] ==  return_list:
-                            data['products'].append({'id':new_bc.get('id'), "code" : list(bar_c.values())[0], 'is_modification': True})
+                            data['products'].append({'id':new_bc.get('id'), "code" : list(bar_c.values())[0], 'is_modification': new_bc['meta']['type'] != 'product'})
                             break
                         else:
                             continue  
@@ -95,7 +95,7 @@ class FetchProducts(APIView):
                         founded_codes.append(f'code!={row.get("code")}')
                     else:
                         founded_codes[0]+=f'code!={row.get("code")}'
-                    data['products'].append({'id': row['id'], 'code': row['code'], "is_modification": row['meta']['type'] == 'product'}, )
+                    data['products'].append({'id': row['id'], 'code': row['code']})
 
             uncomitted_list = []
             if len(data['products']): 
