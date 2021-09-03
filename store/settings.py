@@ -43,10 +43,11 @@ INSTALLED_APPS = [
 ]
 
 
-CORS_ALLOWED_ORIGINS = [
-    "https://lethal-growth.surge.sh",
-    'http://localhost:3306'
-]
+CORS_ALLOW_ALL_ORIGINS = True
+TIMEOUT = None
+
+
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
