@@ -34,12 +34,11 @@ class FetchBarcodes(APIView):
                     for bar_c in new_bc['barcodes']:  
                         # this_variant_shtrix.append(list(bar_c.values())[0])                      
                         if list(bar_c.values())[0] ==  return_list:
-                            data['products'].append({'id':new_bc.get('id'), "code" : list(bar_c.values())[0]})
+                            data['products'].append({'id':new_bc.get('id'), "code" : list(bar_c.values())[0], 'is_modification': True})
                             break
                         else:
                             continue  
             if len(data['products']) and  len(data['products'][0].get('id')) > 0:
-                data['is_modification'] = True
                 return Response(data=data, status=200)
             else:
                 data['products'] = []
