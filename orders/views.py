@@ -95,7 +95,7 @@ class FetchProducts(APIView):
                         founded_codes.append(f'code!={row.get("code")}')
                     else:
                         founded_codes[0]+=f'code!={row.get("code")}'
-                    data['products'].append({'id': row['id'], 'code': row['code']})
+                    data['products'].append({'id': row['id'], 'code': row['code'], "is_modification": row['meta']['type'] == 'product'}, )
 
             uncomitted_list = []
             if len(data['products']): 
