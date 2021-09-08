@@ -7,14 +7,15 @@ from rest_framework.views import APIView
 
 def generate_token():
     b64Val = base64.encodebytes(bytes('api@си:wZi1QsfD'.encode('utf-8')))
-    token = requests.post('https://online.moysklad.ru/api/remap/1.2/security/token', headers={"Authorization": "Basic %s" % b64Val}).json()
-    print(token)
+    token = requests.post('https://online.moysklad.ru/api/remap/1.2/security/token',
+                          headers={"Authorization": "Basic %s" % b64Val}).json()
     return '969dad3d03ef67680f68072ddf53c0df24eacea8'
+
 
 class FetchBarcodes(APIView):
 
-    def post(self,request,**kwargs):
-        token =  generate_token()
+    def post(self, request, **kwargs):
+        token = generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         data = {}
         data['products'] = []
@@ -26,28 +27,27 @@ class FetchBarcodes(APIView):
         res5 = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/assortment?filter=search={return_list}',
                             params=None, headers=headers).json()
 
-        
         if res5.get('rows'):
             for new_bc in res5['rows']:
                 if new_bc.get('barcodes'):
                     # this_variant_shtrix = []
-                    for bar_c in new_bc['barcodes']:  
+                    for bar_c in new_bc['barcodes']:
                         # this_variant_shtrix.append(list(bar_c.values())[0])                      
-                        if list(bar_c.values())[0] ==  return_list:
-                            data['products'].append({'id':new_bc.get('id'), "code" : list(bar_c.values())[0], 'is_modification': new_bc['meta']['type'] != 'product'})
+                        if list(bar_c.values())[0] == return_list:
+                            data['products'].append({'id': new_bc.get('id'), "code": list(bar_c.values())[0],
+                                                     'is_modification': new_bc['meta']['type'] != 'product'})
                             break
                         else:
-                            continue  
-            if len(data['products']) and  len(data['products'][0].get('id')) > 0:
+                            continue
+            if len(data['products']) and len(data['products'][0].get('id')) > 0:
                 return Response(data=data, status=200)
             else:
                 data['products'] = []
                 return Response(data=data, status=200)
         else:
             data['products'] = []
-            return Response(data=data, status=200)         
-  
-        
+            return Response(data=data, status=200)
+
 
 class FetchProducts(APIView):
     """ We are fetching products from moysklad API 
@@ -58,7 +58,7 @@ class FetchProducts(APIView):
 
     def post(self, request, **kwargs):
         global return_list
-        token =  generate_token()
+        token = generate_token()
         headers = {"Authorization": f"Bearer {token}"}
 
         data = {}
@@ -87,18 +87,18 @@ class FetchProducts(APIView):
                                f'?filter={new_code_list[0]}', params=None, headers=headers).json()
 
             if res.get('rows'):
-            # data['pr'] = res
+                # data['pr'] = res
                 ct_code = 0
                 for row in res['rows']:
                     ct_code += 1
                     if ct_code == 1:
                         founded_codes.append(f'code!={row.get("code")}')
                     else:
-                        founded_codes[0]+=f'code!={row.get("code")}'
+                        founded_codes[0] += f'code!={row.get("code")}'
                     data['products'].append({'id': row['id'], 'code': row['code']})
 
             uncomitted_list = []
-            if len(data['products']): 
+            if len(data['products']):
                 for i in list(data['products']):
                     uncomitted_list.append(str(i['code']).lower())
 
@@ -124,8 +124,6 @@ class FetchProducts(APIView):
                         else:
                             my_variant[0] += f'code={not_found_codes};'
 
-                
-                
                 res2 = requests.get(
                     f'http://online.moysklad.ru/api/remap/1.2/entity/variant?filter=code={my_variant[0]}', params=None,
                     headers=headers).json()
@@ -138,14 +136,12 @@ class FetchProducts(APIView):
                             if ct_variant == 1:
                                 founded_codes.append(f'code!={i.get("code")}')
                             else:
-                                founded_codes[0]+=f'code!={i.get("code")}'
+                                founded_codes[0] += f'code!={i.get("code")}'
                         else:
-                            founded_codes[0]+=f'code!={i.get("code")}'
-                        data['products'].append({'id': i.get('id'), "code": i.get('code'),'is_modification':True})
+                            founded_codes[0] += f'code!={i.get("code")}'
+                        data['products'].append({'id': i.get('id'), "code": i.get('code'), 'is_modification': True})
                         if str(i['code']).lower() in return_list:
                             return_list.remove(str(i['code']).lower())
-    
-                                
 
             code_error_dict = {}
             code_error_dict['code_errors'] = list()
@@ -153,7 +149,6 @@ class FetchProducts(APIView):
                 code_error_dict['code_errors'].append(i)
             data['code_errors'] = code_error_dict['code_errors']
             return Response(data=data, status=200)
-            
 
 
 class FetchAgents(APIView):
@@ -164,7 +159,7 @@ class FetchAgents(APIView):
     """
 
     def post(self, request, **kwargs):
-        token =  generate_token()
+        token = generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         agents = request.data.get('name')
         res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/counterparty/'
@@ -172,21 +167,20 @@ class FetchAgents(APIView):
 
         data = {'contragents': res.json()['rows']}
         if res.status_code >= 200 and res.status_code <= 205 and len(data):
-
             return Response(data, status=status.HTTP_200_OK)
-        return Response(data={"detail":'Нет результата'}, status=status.HTTP_400_BAD_REQUEST)
-       
+        return Response(data={"detail": 'Нет результата'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class FetchOrganization(APIView):
     """ Example of request {'inn':'5665656565','kpp':'55522555'} """
 
     def post(self, request, **kwargs):
-        token =  generate_token()
+        token = generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         organization_data = f'inn={request.data.get("inn")}&kpp={request.data.get("kpp")}'
-        res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/organization', params=None, headers=headers)
-        
+        res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/organization', params=None,
+                           headers=headers)
+
         data = {}
         if res.status_code >= 200 and res.status_code <= 205:
             data['organizations'] = res.json()['rows']
@@ -199,7 +193,7 @@ class FetchStates(APIView):
 
     def post(self, request, **kwargs):
 
-        token =  generate_token()
+        token = generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         data_req = request.data
         res = requests.get('https://online.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/', params=None,
@@ -229,7 +223,7 @@ class OrderForBuyer(APIView):
     """ Order for buyer 'Заказ покупателя' """
 
     def post(self, request, **kwargs):
-        token =  generate_token()
+        token = generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         data = request.data
 
@@ -244,16 +238,15 @@ class FetchStore(APIView):
     """ Example of request {"store": 'Великий Новгород'} """
 
     def post(self, request, **kwargs):
-        token =  generate_token()
+        token = generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         store_name = request.data.get('store')
         if store_name:
             res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/store/'
-                            f'?filter=name={store_name}', params=None, headers=headers)
+                               f'?filter=name={store_name}', params=None, headers=headers)
         else:
             res = requests.get(f'https://online.moysklad.ru/api/remap/1.2/entity/store/', params=None, headers=headers)
         if res.status_code >= 200 and res.status_code <= 205:
-            
             return Response(data={'stores': res.json()['rows']}, status=status.HTTP_200_OK)
         return Response(data=res.json(), status=status.HTTP_400_BAD_REQUEST)
 
@@ -262,7 +255,7 @@ class OrderSupplier(APIView):
     """ Order for buyer 'Заказ Поставщику'  required params name,organization,agent """
 
     def post(self, request, **kwargs):
-        token =  generate_token()
+        token = generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         data_req = request.data
         res = requests.post('https://online.moysklad.ru/api/remap/1.2/entity/purchaseorder',
@@ -276,7 +269,7 @@ class OrderAcceptance(APIView):
     """ Приемка required params name,organization,agent,store """
 
     def post(self, request, **kwargs):
-        token =  generate_token()
+        token = generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         data_req = request.data
         res = requests.post('https://online.moysklad.ru/api/remap/1.2/entity/supply',
@@ -290,11 +283,67 @@ class OrderShipments(APIView):
     """ Отгрузки  required params name,organization,agent,store """
 
     def post(self, request, **kwargs):
-        token =  generate_token()
+        token = generate_token()
         headers = {"Authorization": f"Bearer {token}"}
         data_req = request.data
         res = requests.post('https://online.moysklad.ru/api/remap/1.2/entity/demand',
                             json=data_req, headers=headers)
-        if res.status_code >= 200 and res.status_code <= 205:
+        if 200 <= res.status_code <= 205:
+            return Response(data=res.json(), status=status.HTTP_200_OK)
+        return Response(data=res.json(), status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrderInventory(APIView):
+    """ Order Inventory """
+
+    def post(self, request, **kwargs):
+        token = generate_token()
+        headers = {"Authorization": f"Bearer {token}"}
+        data_req = request.data
+        res = requests.post('https://online.moysklad.ru/api/remap/1.2/entity/inventory',
+                            json=data_req, headers=headers)
+        if 200 <= res.status_code <= 205:
+            return Response(data=res.json(), status=status.HTTP_200_OK)
+        return Response(data=res.json(), status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrderPostings(APIView):
+    """ Order Postings """
+
+    def post(self, request, **kwargs):
+        token = generate_token()
+        headers = {"Authorization": f"Bearer {token}"}
+        data_req = request.data
+        res = requests.post('https://online.moysklad.ru/api/remap/1.2/entity/enter',
+                            json=data_req, headers=headers)
+        if 200 <= res.status_code <= 205:
+            return Response(data=res.json(), status=status.HTTP_200_OK)
+        return Response(data=res.json(), status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrderLoss(APIView):
+    """ Order Loss """
+
+    def post(self, request, **kwargs):
+        token = generate_token()
+        headers = {"Authorization": f"Bearer {token}"}
+        data_req = request.data
+        res = requests.post('https://online.moysklad.ru/api/remap/1.2/entity/loss',
+                            json=data_req, headers=headers)
+        if 200 <= res.status_code <= 205:
+            return Response(data=res.json(), status=status.HTTP_200_OK)
+        return Response(data=res.json(), status=status.HTTP_400_BAD_REQUEST)
+
+
+class InternalOrder(APIView):
+    """ Order Internal """
+
+    def post(self, request, **kwargs):
+        token = generate_token()
+        headers = {"Authorization": f"Bearer {token}"}
+        data_req = request.data
+        res = requests.post('https://online.moysklad.ru/api/remap/1.2/entity/internalorder',
+                            json=data_req, headers=headers)
+        if 200 <= res.status_code <= 205:
             return Response(data=res.json(), status=status.HTTP_200_OK)
         return Response(data=res.json(), status=status.HTTP_400_BAD_REQUEST)
