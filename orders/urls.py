@@ -13,5 +13,10 @@ urlpatterns = [
     path('order-supplier/', OrderSupplier.as_view(), name='order-supplier'),
     path('order-acceptance/', OrderAcceptance.as_view(), name='order-acceptance'),
     path('order-shipments/', OrderShipments.as_view(), name='order-shipments'),
+    path('order-inventory/', OrderInventory.as_view(), name='order_inventory'),
+    path('order-posting/', OrderPostings.as_view(), name='order_posting'),
+    path('order-loss/', OrderLoss.as_view(), name='order_loss'),
+    path('order-internal/', InternalOrder.as_view(), name='order_internal'),
+
 
 ]
